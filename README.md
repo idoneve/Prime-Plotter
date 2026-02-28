@@ -67,11 +67,13 @@ Output Plot:
 
 Flags may be provided individually or combined (e.g., `-vnp`).
 
-| Flag | Description                               |
+| Flag | Description                             |
 | ---- | ----------------------------------------- |
 | `-v` | Verbose output                            |
 | `-np`| Skip plotting                             |
-| `-b` | Enable large-scale processing mode        |
+| `-b` | Enable benchmarking         
+       |
+| `-l` | Enable large scale plotting
 
 ---
 

@@ -3,10 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pandas as pd
-import shutil
 import subprocess
-from sys import argv
-
+import sys
 
 def clean_directory():
     print("Cleaning up directory...")
@@ -145,6 +143,7 @@ def plot_primes(primes, gaps, large_toggle):
 
 
 def main():
+    argv = sys.argv.copy()
     if len(argv) == 2 and argv[1] == "clean":
         clean_directory()
         return
@@ -164,6 +163,14 @@ def main():
             "Clean directory usage\n - python plot_primes.py clean (to clean directory)\n"
         )
         return
+
+    new_argv = []
+    for arg in argv:
+        if arg.startswith("-") and len(arg) > 2:
+            new_argv.extend(f"-{c}" for c in arg[1:])
+        else:
+            new_argv.append(arg)
+    argv = new_argv
 
     no_plot = False
     if "--no_plot" in argv or "-np" in argv:

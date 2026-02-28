@@ -47,7 +47,7 @@ python plot_primes.py [options] <processes> <threads> <range> <start>
 Example:
 
 ```bash
-python plot_primes.py -vnp 4 8 1000000 1
+python plot_primes.py -vl 4 8 1000000 1
 ```
 
 This runs:
@@ -56,6 +56,10 @@ This runs:
 * 8 threads per process
 * Range size of 1,000,000
 * Starting at 1
+
+Output Plot:
+
+[Untitled.pdf](https://github.com/user-attachments/files/25640701/Untitled.pdf)
 
 ---
 

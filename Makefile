@@ -60,7 +60,7 @@ format:
 	@echo "Formatting complete"
 
 clean:
-	rm -f $(TARGET) $(OBJS) $(DEPS)
+	rm -rf $(TARGET) $(OBJS) $(DEPS) primes all_primes.csv
 
 clean_all: clean
 	@echo "WARNING: WILL REMOVE dist directory and ANY .zip or tar.gz files in 3 seconds"
@@ -88,7 +88,7 @@ benchmark: clean
 	$(MAKE) CFLAGS="$(filter-out -g, $(opts))" parallel_build
 	@echo "Running benchmark with -$(OPTIMIZER)..."
 	@echo "=== Timing Results ==="
-	@bash -c 'time ./$(TARGET) $(ARGS) > /dev/null 2>&1'
+	@bash -c 'time ./$(TARGET) $(ARGS)'
 	@echo ""
 	@echo "======================"
 	@echo "Completed benchmark."

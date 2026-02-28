@@ -8,32 +8,32 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-void make_prime_dir(void) {
+void make_primes_dir(void) {
   struct stat st = {0};
   if (stat("primes", &st) == 0) {
     char cmd[256];
     snprintf(cmd, sizeof(cmd), "rm -rf primes");
     if (system(cmd) != 0) {
-      perror("failed to remove primes directory");
+      perror("Failed to remove primes directory");
       exit(1);
     }
   }
 
   if (mkdir("primes", 0755) != 0) {
-    perror("failed to create primes directory");
+    perror("Failed to create primes directory");
     exit(1);
   }
 }
 
-void make_prime_file(uint64_t *found, uint64_t pid, uint64_t tid,
-                     uint64_t count) {
+void make_primes_file(uint64_t *found, uint64_t pid, uint64_t tid,
+                      uint64_t count) {
   char filename[512];
   snprintf(filename, sizeof(filename), "primes/primes_p%llu_t%llu.csv", pid,
            tid);
 
   FILE *file = fopen(filename, "w");
   if (file == NULL) {
-    perror("failed to open file");
+    perror("Failed to open file");
     exit(1);
   } else {
     for (uint64_t i = 0; i < count; ++i) {
@@ -97,7 +97,7 @@ void *thread_func(void *arg) {
     }
   }
 
-  make_prime_file(found, pid, tid, count);
+  make_primes_file(found, pid, tid, count);
 
   free(found);
   return NULL;
@@ -105,7 +105,7 @@ void *thread_func(void *arg) {
 
 int main(int argc, const char *argv[]) {
   if (argc != 5) {
-    perror("incorrect number of args");
+    perror("Incorrect number of args");
     exit(1);
   }
 
@@ -125,25 +125,24 @@ int main(int argc, const char *argv[]) {
 
   uint64_t range = strtoull(argv[3], &endptr, 10);
   if (errno != 0 || *endptr != '\0' || range == 0) {
-    perror("Invalid ragne");
+    perror("Invalid range");
     exit(1);
   }
 
   uint64_t start_num = strtoull(argv[4], &endptr, 10);
   if (errno != 0 || *endptr != '\0' || start_num == 0) {
-    perror("Invalid start_num");
+    perror("Invalid starting number");
     exit(1);
   }
 
-  make_prime_dir();
+  make_primes_dir();
 
   pid_t pids[process_num];
   pthread_t threads[thread_num];
-
   for (uint64_t i = 0; i < process_num; ++i) {
     pids[i] = fork();
     if (pids[i] == -1) {
-      perror("creating fork failed");
+      perror("Creating fork failed");
       exit(1);
     } else if (pids[i] == 0) {
       for (uint64_t j = 0; j < thread_num; ++j) {
@@ -153,9 +152,8 @@ int main(int argc, const char *argv[]) {
         args[2] = thread_num;
         args[3] = range;
         args[4] = start_num;
-
         if (pthread_create(&threads[j], NULL, thread_func, args) != 0) {
-          perror("creating thread failed");
+          perror("Creating thread failed");
           free(args);
           exit(1);
         }
@@ -163,7 +161,7 @@ int main(int argc, const char *argv[]) {
 
       for (uint64_t j = 0; j < thread_num; ++j) {
         if (pthread_join(threads[j], NULL) != 0) {
-          perror("joining thread failed");
+          perror("Joining thread failed");
           exit(1);
         }
       }

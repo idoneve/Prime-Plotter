@@ -70,8 +70,7 @@ Flags may be provided individually or combined (e.g., `-vnp`).
 | Flag | Description                               |
 | ---- | ----------------------------------------- |
 | `-v` | Verbose output                            |
-| `-n` | Skip plotting                             |
-| `-p` | Skip prime generation (use existing data) |
+| `-np`| Skip plotting                             |
 | `-b` | Enable large-scale processing mode        |
 
 ---

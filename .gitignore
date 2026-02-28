@@ -1,0 +1,15 @@
+# ===== Build artifacts =====
+*.o
+*.out
+prime_finder
+
+# ===== Generated data =====
+Primes/
+*.csv
+
+# ===== Python =====
+__pycache__/
+*.pyc
+
+# ===== OS junk =====
+.DS_Store

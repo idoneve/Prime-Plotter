@@ -173,8 +173,12 @@ def main():
     argv = new_argv
 
     no_plot = False
-    if "--no_plot" in argv or "-np" in argv:
-        argv.remove("--no_plot") if "--no_plot" in argv else argv.remove("-np")
+    if "--no_plot" in argv or ("-n" in argv and "-p" in argv):
+        if "--no_plot" in argv:
+            argv.remove("--no_plot")
+        else:
+            argv.remove("-n")
+            argv.remove("-p")
         no_plot = True
     large_toggle = False
     if "--large" in argv or "-l" in argv:

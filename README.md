@@ -59,7 +59,7 @@ This runs:
 
 Output Plot:
 
-[Untitled.pdf](https://github.com/user-attachments/files/25640701/Untitled.pdf)
+![Untitled](https://github.com/user-attachments/assets/fcc364a8-151d-4ee9-8155-95722f52686a)
 
 ---
 

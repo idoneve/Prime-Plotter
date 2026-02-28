@@ -106,7 +106,7 @@ Prime-Plotter/
 └── README.md
 ```
 
-Note: The `Primes/` directory and CSV files are generated at runtime and are not stored in the repository.
+Note: The `primes/` directory and CSV files are generated at runtime and are not stored in the repository.
 
 ---
 

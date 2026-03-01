@@ -252,7 +252,7 @@ def main():
         print(
             f"Percentage of primes that are twin primes {100 * len(twin_primes) / (primes[-1] - primes[0]):.3f}%\n"
         )
-        
+
         print(f"Largest gap between primes found {max(gaps)}")
         print(f"Average prime gap {np.average(gaps):.3f}")
         print(

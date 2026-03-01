@@ -17,6 +17,89 @@ def clean_directory():
     return True
 
 
+def check_all_args(argv):
+    if len(argv) == 2 and argv[1] == "clean":
+        clean_directory()
+        return False
+
+    if not (5 <= len(argv) and len(argv) <= 9):
+        print("Incorrect number of args received\n")
+        print(
+            "Create plot usage\n - python plot_primes.py [-b | --benchmark] [-v | --verbose] [-l | --large] [-np | --no_plot] <processes> <threads> <iterations> <start_num>"
+        )
+        print(
+            "Clean directory usage\n - python plot_primes.py clean (to clean directory)\n"
+        )
+        return False
+    return True
+
+
+def get_flags(argv):
+    if not check_all_args(argv):
+        return
+
+    new_argv = []
+    for arg in argv:
+        if arg.startswith("-") and len(arg) > 2:
+            new_argv.extend(f"-{c}" for c in arg[1:])
+        else:
+            new_argv.append(arg)
+    return new_argv
+
+
+def check_args(argv):
+    if len(argv) != 5:
+        print("Incorrect number of args received\n")
+        print(
+            "Create plot usage\n - python plot_primes.py [-b | --benchmark] [-v | --verbose] [-l | --large] [-np | --no_plot] <processes> <threads> <iterations> <start_num>"
+        )
+        print(
+            "Clean directory usage\n - python plot_primes.py clean (to clean directory)\n"
+        )
+        return False
+    return True
+
+
+def get_args(argv):
+    verbose = False
+    no_plot = False
+    large_toggle = False
+    if "--verbose" in argv or "-v" in argv:
+        argv.remove("--verbose") if "--verbose" in argv else argv.remove("-v")
+        verbose = True
+    if "--no_plot" in argv or ("-n" in argv and "-p" in argv):
+        if "--no_plot" in argv:
+            argv.remove("--no_plot")
+        else:
+            argv.remove("-n")
+            argv.remove("-p")
+        no_plot = True
+    if "--large" in argv or "-l" in argv:
+        argv.remove("--large") if "--large" in argv else argv.remove("-l")
+        large_toggle = True
+    if "--benchmark" in argv or "-b" in argv:
+        argv.remove("--benchmark") if "--benchmark" in argv else argv.remove("-b")
+        if not check_args(argv):
+            return
+        df = load_prime_data(
+            np.int64(argv[1]),
+            np.int64(argv[2]),
+            np.int64(argv[3]),
+            np.int64(argv[4]),
+            True,
+        )
+    else:
+        if not check_args(argv):
+            return
+        df = load_prime_data(
+            np.int64(argv[1]),
+            np.int64(argv[2]),
+            np.int64(argv[3]),
+            np.int64(argv[4]),
+        )
+    return df, verbose, large_toggle, no_plot
+
+
 def compile_c_program():
     print("Compiling C program...")
     result = subprocess.run(["make", "parallel_build"], capture_output=True, text=True)
@@ -129,14 +212,12 @@ def plot_primes(primes, gaps, large_toggle):
             alpha=0.3,
         )
 
-    # axes[0].set_xlabel("Numbers")
     axes[0].set_ylabel("Primes")
     axes[0].set_title(f"{len(primes)} Primes")
     axes[0].grid(True, alpha=0.3)
 
     axes[1].set_xlabel("Numbers")
     axes[1].set_ylabel("Gap to Next Prime")
-    # axes[1].set_title("Prime Gaps")
     axes[1].grid(True, alpha=0.3)
 
     plt.tight_layout()
@@ -144,68 +225,15 @@ def plot_primes(primes, gaps, large_toggle):
 
 
 def main():
-    argv = sys.argv.copy()
-    if len(argv) == 2 and argv[1] == "clean":
-        clean_directory()
+    flags = get_flags(sys.argv.copy())
+    if flags is None:
         return
 
-    if (
-        len(argv) != 5
-        and len(argv) != 6
-        and len(argv) != 7
-        and len(argv) != 8
-        and len(argv) != 9
-    ):
-        print("Incorrect number of args received\n")
-        print(
-            "Create plot usage\n - python plot_primes.py [-b | --benchmark] [-v | --verbose] [-l | --large] [-np | --no_plot] <processes> <threads> <iterations> <start_num>"
-        )
-        print(
-            "Clean directory usage\n - python plot_primes.py clean (to clean directory)\n"
-        )
+    args = get_args(flags)
+    if args is None:
         return
 
-    new_argv = []
-    for arg in argv:
-        if arg.startswith("-") and len(arg) > 2:
-            new_argv.extend(f"-{c}" for c in arg[1:])
-        else:
-            new_argv.append(arg)
-    argv = new_argv
-
-    no_plot = False
-    if "--no_plot" in argv or ("-n" in argv and "-p" in argv):
-        if "--no_plot" in argv:
-            argv.remove("--no_plot")
-        else:
-            argv.remove("-n")
-            argv.remove("-p")
-        no_plot = True
-    large_toggle = False
-    if "--large" in argv or "-l" in argv:
-        argv.remove("--large") if "--large" in argv else argv.remove("-l")
-        large_toggle = True
-    verbose = False
-    if "--verbose" in argv or "-v" in argv:
-        argv.remove("--verbose") if "--verbose" in argv else argv.remove("-v")
-        verbose = True
-    if "--benchmark" in argv or "-b" in argv:
-        argv.remove("--benchmark") if "--benchmark" in argv else argv.remove("-b")
-        df = load_prime_data(
-            np.int64(argv[1]),
-            np.int64(argv[2]),
-            np.int64(argv[3]),
-            np.int64(argv[4]),
-            True,
-        )
-    else:
-        df = load_prime_data(
-            np.int64(argv[1]),
-            np.int64(argv[2]),
-            np.int64(argv[3]),
-            np.int64(argv[4]),
-        )
-
+    df, verbose, large_toggle, no_plot = args
     if df is not None:
         primes = np.array(df["prime"])
         gaps = np.diff(primes)

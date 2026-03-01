@@ -6,6 +6,7 @@ import pandas as pd
 import subprocess
 import sys
 
+
 def clean_directory():
     print("Cleaning up directory...")
     result = subprocess.run(args=["make", "clean"], capture_output=True, text=True)

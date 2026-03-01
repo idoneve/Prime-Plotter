@@ -242,17 +242,17 @@ def main():
         print(
             f"Range: {df['prime'].min()} to {df['prime'].max()} ({df['prime'].max() - df['prime'].min()})\n"
         )
+
         print(f"Total primes found {len(df)}")
         print(
-            f"Percentage of numbers that are primes {100 * len(primes) / (primes[-1] - primes[0]):.3f}%"
+            f"Percentage of numbers that are primes {100 * len(primes) / (primes[-1] - primes[0]):.3f}%\n"
         )
-        print(
-            f"Standard Deviation {np.sqrt(np.average(primes ** 2) / np.average(primes) ** 2):.3f}\n"
-        )
+
         print(f"Total twin primes found {len(twin_primes)}")
         print(
             f"Percentage of primes that are twin primes {100 * len(twin_primes) / (primes[-1] - primes[0]):.3f}%\n"
         )
+        
         print(f"Largest gap between primes found {max(gaps)}")
         print(f"Average prime gap {np.average(gaps):.3f}")
         print(
@@ -268,7 +268,6 @@ def main():
                     .reset_index(name="prime_count")
                 ).to_string(index=False)
             )
-
         if not no_plot:
             plot_primes(primes, gaps, large_toggle)
     else:

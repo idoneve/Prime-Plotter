@@ -158,7 +158,7 @@ def main():
     ):
         print("Incorrect number of args received\n")
         print(
-            'Create plot usage\n - python plot_primes.py [-b | --benchmark] [-v | --verbose] [-l | --large] [-np | --no_plot] s<processes> <threads> <iterations> <start_num> <large_toggle> ("(t)rue" if running large values)'
+            "Create plot usage\n - python plot_primes.py [-b | --benchmark] [-v | --verbose] [-l | --large] [-np | --no_plot] <processes> <threads> <iterations> <start_num>"
         )
         print(
             "Clean directory usage\n - python plot_primes.py clean (to clean directory)\n"

@@ -84,8 +84,7 @@ prod_build: clean
 run:
 	./$(TARGET) $(ARGS)
 
-benchmark: clean
-	$(MAKE) CFLAGS="$(filter-out -g, $(opts))" parallel_build
+benchmark: clean parallel_build
 	@echo "Running benchmark with -$(OPTIMIZER)..."
 	@echo "=== Timing Results ==="
 	@bash -c 'time ./$(TARGET) $(ARGS)'

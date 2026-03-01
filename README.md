@@ -103,6 +103,7 @@ Prime-Plotter/
 ├── prime_finder.c
 ├── plot_primes.py
 ├── Makefile
+├── .gitignore
 └── README.md
 ```
 

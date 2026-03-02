@@ -116,21 +116,18 @@ int main(int argc, const char *argv[]) {
     perror("Invalid process_num");
     exit(1);
   }
-
   uint64_t thread_num = strtoull(argv[2], &endptr, 10);
   if (errno != 0 || *endptr != '\0' || thread_num == 0) {
     perror("Invalid thread_num");
     exit(1);
   }
-
   uint64_t range = strtoull(argv[3], &endptr, 10);
   if (errno != 0 || *endptr != '\0' || range == 0) {
     perror("Invalid range");
     exit(1);
   }
-
   uint64_t start_num = strtoull(argv[4], &endptr, 10);
-  if (errno != 0 || *endptr != '\0' || start_num == 0) {
+  if (errno != 0 || *endptr != '\0') {
     perror("Invalid starting number");
     exit(1);
   }

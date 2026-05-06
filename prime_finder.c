@@ -1,5 +1,6 @@
 #include <errno.h>
 #include <inttypes.h>
+#include <primesieve.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,7 +10,7 @@
 #include <unistd.h>
 
 void make_primes_dir(void) {
-  struct stat st = {0};
+  struct stat st = { 0 };
   if (stat("primes", &st) == 0) {
     char cmd[256];
     snprintf(cmd, sizeof(cmd), "rm -rf primes");
@@ -25,82 +26,62 @@ void make_primes_dir(void) {
   }
 }
 
-void make_primes_file(uint64_t *found, uint64_t pid, uint64_t tid,
-                      uint64_t count) {
-  char filename[512];
-  snprintf(filename, sizeof(filename), "primes/primes_p%llu_t%llu.csv", pid,
-           tid);
+// void make_primes_file(uint64_t *found, uint64_t pid, uint64_t tid,
+//   uint64_t count) {
+//   char filename[512];
+//   snprintf(filename, sizeof(filename), "primes/primes_p%llu_t%llu.csv", pid,
+//     tid);
 
-  FILE *file = fopen(filename, "w");
-  if (file == NULL) {
-    perror("Failed to open file");
-    exit(1);
-  } else {
-    for (uint64_t i = 0; i < count; ++i) {
-      fprintf(file, "%" PRIu64 ",%" PRIu64 ",%" PRIu64 "\n", pid, tid,
-              found[i]);
-    }
-    fclose(file);
-  }
-}
-
-uint64_t is_prime(uint64_t n) {
-  if (n < 2) {
-    return 0;
-  }
-  if (n == 2 || n == 3) {
-    return 1;
-  }
-  if (n % 2 == 0 || n % 3 == 0) {
-    return 0;
-  }
-
-  for (uint64_t i = 5; i * i <= n; i += 6) {
-    if (n % i == 0 || n % (i + 2) == 0) {
-      return 0;
-    }
-  }
-
-  return 1;
-}
+//   FILE *file = fopen(filename, "w");
+//   if (file == NULL) {
+//     perror("Failed to open file");
+//     exit(1);
+//   } else {
+//     for (uint64_t i = 0; i < count; ++i) {
+//       fprintf(file, "%" PRIu64 ",%" PRIu64 ",%" PRIu64 "\n", pid, tid,
+//         found[i]);
+//     }
+//     fclose(file);
+//   }
+// }
 
 void *thread_func(void *arg) {
-  uint64_t *args = (uint64_t *)arg;
-  uint64_t pid = args[0];
-  uint64_t tid = args[1];
-  uint64_t thread_num = args[2];
-  uint64_t range = args[3];
-  uint64_t start_num = args[4];
-  free(arg);
-
-  uint64_t tidx = pid * thread_num + tid;
-  uint64_t start = start_num + tidx * range;
-  uint64_t end = start + range;
-
-  uint64_t *found = malloc(range * sizeof(uint64_t));
-  uint64_t count = 0;
-  if (start <= 2 && 2 < end) {
-    found[count++] = 2;
-  }
-
-  uint64_t first = start;
-  if (first < 3) {
-    first = 3;
-  }
-  if (first % 2 == 0) {
-    ++first;
-  }
-
-  for (uint64_t n = first; n < end; n += 2) {
-    if (is_prime(n)) {
-      found[count++] = n;
+    uint64_t *args = (uint64_t *)arg;
+    uint64_t process_id = args[0];
+    uint64_t thread_id  = args[1];
+    uint64_t total_threads = args[2];
+    uint64_t range = args[3];
+    uint64_t start_num = args[4];
+    
+    uint64_t chunk = range / total_threads;
+    uint64_t start = start_num + (process_id * range) + (thread_id * chunk);
+    uint64_t end = (thread_id == total_threads - 1) 
+                   ? start_num + ((process_id + 1) * range) - 1 
+                   : start + chunk - 1;
+    
+    char filename[256];
+    snprintf(filename, sizeof(filename), "primes/p%d_t%d.csv", 
+             (int)process_id, (int)thread_id);
+    FILE *fp = fopen(filename, "w");
+    if (!fp) {
+        perror("fopen failed");
+        free(args);
+        return NULL;
     }
-  }
-
-  make_primes_file(found, pid, tid, count);
-
-  free(found);
-  return NULL;
+    
+    primesieve_iterator it;
+    primesieve_init(&it);
+    primesieve_skipto(&it, start, end);
+    
+    uint64_t prime;
+    while ((prime = primesieve_next_prime(&it)) <= end) {
+        fprintf(fp, "%" PRIu64 "\n", prime);
+    }
+    
+    primesieve_free_iterator(&it);
+    fclose(fp);
+    free(args);
+    return NULL;
 }
 
 int main(int argc, const char *argv[]) {

@@ -5,6 +5,9 @@ import os
 import pandas as pd
 import subprocess
 import sys
+import datashader as ds
+import datashader.transfer_functions as tf
+from colorcet import fire
 
 
 def compile_c_program():
@@ -275,7 +278,7 @@ def main():
             print("\nProgram completed successfully")
     else:
         print("Program failed")
-    
+
 
 if __name__ == "__main__":
     main()

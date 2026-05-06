@@ -18,13 +18,14 @@ OPTIMIZER ?= O2
 ARGS ?=
 
 ifeq ($(shell uname -s),Darwin)
-  CC = clang
-  opts = -D_FORTIFY_SOURCE=2 -fstack-protector-all -g -$(OPTIMIZER) -std=$(CSTD) \
+  	CC = clang
+  	opts = -D_FORTIFY_SOURCE=2 -fstack-protector-all -g -$(OPTIMIZER) -std=$(CSTD) \
          -Wall -Wextra -Wpedantic -Wshadow -Winit-self -Wpointer-arith \
          -Wcast-qual
+	LDFLAGS = -L/opt/homebrew/lib -lprimesieve
 else
-  CC = gcc
-  opts = -D_FORTIFY_SOURCE=2 -fno-diagnostics-show-option \
+  	CC = gcc
+  	opts = -D_FORTIFY_SOURCE=2 -fno-diagnostics-show-option \
          -fstack-protector-all -g -$(OPTIMIZER) -std=$(CSTD) \
          -Walloc-zero -Wpedantic -Wduplicated-cond \
          -Wduplicated-branches -Wextra -Winit-self \
@@ -37,7 +38,7 @@ else
 endif
 
 # Flags
-CFLAGS ?= -Wall -ggdb3 -pthread -MMD -MP $(opts)
+CFLAGS ?= -Wall -ggdb3 -pthread -MMD -MP -I/opt/homebrew/include $(opts)
 
 # Targets
 TARGET ?= a.out
@@ -50,7 +51,7 @@ DEPS = $(OBJS:.o=.d)
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@ 
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@

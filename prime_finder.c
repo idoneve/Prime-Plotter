@@ -26,25 +26,6 @@ void make_primes_dir(void) {
   }
 }
 
-// void make_primes_file(uint64_t *found, uint64_t pid, uint64_t tid,
-//   uint64_t count) {
-//   char filename[512];
-//   snprintf(filename, sizeof(filename), "primes/primes_p%llu_t%llu.csv", pid,
-//     tid);
-
-//   FILE *file = fopen(filename, "w");
-//   if (file == NULL) {
-//     perror("Failed to open file");
-//     exit(1);
-//   } else {
-//     for (uint64_t i = 0; i < count; ++i) {
-//       fprintf(file, "%" PRIu64 ",%" PRIu64 ",%" PRIu64 "\n", pid, tid,
-//         found[i]);
-//     }
-//     fclose(file);
-//   }
-// }
-
 void *thread_func(void *arg) {
     uint64_t *args = (uint64_t *)arg;
     uint64_t process_id = args[0];

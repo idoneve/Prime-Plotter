@@ -1,4 +1,5 @@
 import glob
+import math
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -80,22 +81,31 @@ def load_prime_data(processes, threads, iterations, start_num, benchmark_toggle=
         )
     ):
         return None
-
     files = glob.glob("primes/*.csv")
     if not files:
         print("Failed to find any prime files")
         return None
+    dfs = []
+    for f in files:
+        basename = os.path.basename(f)
+        parts = basename.replace(".csv", "").split("_")
+        p_id = int(parts[0][1:])
+        t_id = int(parts[1][1:])
 
-    df = pd.concat(
-        [pd.read_csv(f, names=["process", "thread", "prime"]) for f in files]
-    ).sort_values("prime")
+        df = pd.read_csv(f, header=None, names=["prime"])
+        df["process"] = p_id
+        df["thread"] = t_id
+        dfs.append(df)
+    df = pd.concat(dfs).sort_values("prime")
+    df = pd.concat(dfs).sort_values("prime")
+    np.save("all_primes.npy", df["prime"].to_numpy(dtype=np.uint64))
     df.to_csv("all_primes.csv", index=False)
     return df
 
 
-def plot_primes(primes, gaps, large_toggle):
+def plot_primes(primes, gaps, log_toggle, save_only=False):
     fig, axes = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
-    if not large_toggle:
+    if not log_toggle:
         axes[0].scatter(
             primes,
             np.array([i for i in range(len(primes))]),
@@ -143,18 +153,61 @@ def plot_primes(primes, gaps, large_toggle):
     axes[1].grid(True, alpha=0.3)
 
     plt.tight_layout()
+    plt.savefig("primes.png", dpi=200, bbox_inches='tight')
+    if not save_only:
+        plt.show()
+    else:
+        plt.close()
+
+
+def plot_ulam_datashader(primes, n=3000):
+    primes_set = set(primes)
+    x_coords = []
+    y_coords = []
+
+    cx = cy = n // 2
+    dx, dy = 0, -1
+    step = 1
+    steps_taken = 0
+    x, y = cx, cy
+
+    for i in range(1, n * n + 1):
+        if 0 <= x < n and 0 <= y < n:
+            if i in primes_set:
+                x_coords.append(x)
+                y_coords.append(y)
+        if steps_taken == step:
+            dx, dy = -dy, dx
+            steps_taken = 0
+            if dy == 0:
+                step += 1
+        x += dx
+        y += dy
+        steps_taken += 1
+
+    df = pd.DataFrame({"x": x_coords, "y": y_coords})
+    cvs = ds.Canvas(plot_width=n, plot_height=n)
+    agg = cvs.points(df, "x", "y", agg=ds.count())
+    img = tf.shade(agg, cmap=["white", "black"], how="linear")
+    tf.set_background(img, "white")
+
+    fig, ax = plt.subplots(figsize=(10, 10))
+    ax.imshow(img.to_pil(), aspect="equal")
+    ax.set_title(f"Ulam Spiral — {len(primes):,} Primes")
+    ax.axis("off")
     plt.show()
+
+    ds.utils.export_image(img, "ulam_spiral", background="white")
 
 
 def check_all_args(argv):
     if len(argv) == 2 and argv[1] == "clean":
         clean_directory()
         return False
-
-    if not (5 <= len(argv) and len(argv) <= 9):
+    if not (5 <= len(argv) and len(argv) <= 10):
         print("Incorrect number of args received\n")
         print(
-            "Create plot usage\n - python plot_primes.py [-b | --benchmark] [-v | --verbose] [-l | --large] [-np | --no_plot] <processes> <threads> <iterations> <start_num>"
+            "Create plot usage\n - python plot_primes.py [-b | --benchmark] [-v | --verbose] [-l | --large] [-g | --logarithmic] [-np | --no_plot] <processes> <threads> <iterations> <start_num>"
         )
         print(
             "Clean directory usage\n - python plot_primes.py clean (to clean directory)\n"
@@ -180,7 +233,7 @@ def check_args(argv):
     if len(argv) != 5:
         print("Incorrect number of args received\n")
         print(
-            "Create plot usage\n - python plot_primes.py [-b | --benchmark] [-v | --verbose] [-l | --large] [-np | --no_plot] <processes> <threads> <iterations> <start_num>"
+            "Create plot usage\n - python plot_primes.py [-b | --benchmark] [-v | --verbose] [-l | --large] [-g | --logarithmic] [-np | --no_plot] <processes> <threads> <iterations> <start_num>"
         )
         print(
             "Clean directory usage\n - python plot_primes.py clean (to clean directory)\n"
@@ -193,6 +246,9 @@ def get_args(argv):
     verbose = False
     no_plot = False
     large_toggle = False
+    log_toggle = False
+    save_only = False
+
     if "--verbose" in argv or "-v" in argv:
         argv.remove("--verbose") if "--verbose" in argv else argv.remove("-v")
         verbose = True
@@ -206,8 +262,14 @@ def get_args(argv):
     if "--large" in argv or "-l" in argv:
         argv.remove("--large") if "--large" in argv else argv.remove("-l")
         large_toggle = True
+    if "--log" in argv or "-g" in argv:
+        argv.remove("--log") if "--log" in argv else argv.remove("-g")
+        log_toggle = True
     if "--benchmark" in argv or "-b" in argv:
         argv.remove("--benchmark") if "--benchmark" in argv else argv.remove("-b")
+    if "--save-only" in argv or "-s" in argv:
+        argv.remove("--save-only") if "--save-only" in argv else argv.remove("-s")
+        save_only = True
         if not check_args(argv):
             return
         df = load_prime_data(
@@ -226,7 +288,7 @@ def get_args(argv):
             np.int64(argv[3]),
             np.int64(argv[4]),
         )
-    return df, verbose, large_toggle, no_plot
+    return df, verbose, large_toggle, log_toggle, no_plot, save_only
 
 
 def main():
@@ -238,7 +300,7 @@ def main():
     if args is None:
         return
 
-    df, verbose, large_toggle, no_plot = args
+    df, verbose, large_toggle, log_toggle, no_plot, save_only = args
     if df is not None:
         primes = np.array(df["prime"])
         gaps = np.diff(primes)
@@ -273,8 +335,14 @@ def main():
                     .reset_index(name="prime_count")
                 ).to_string(index=False)
             )
+
         if not no_plot:
-            plot_primes(primes, gaps, large_toggle)
+            if large_toggle:
+                n = int(math.sqrt(primes[-1])) + 1
+                n = max(n, 3000)
+                plot_ulam_datashader(primes, n)
+            else:
+                plot_primes(primes, gaps, log_toggle, save_only)
             print("\nProgram completed successfully")
     else:
         print("Program failed")

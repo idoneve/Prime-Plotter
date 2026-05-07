@@ -29,7 +29,7 @@ The system consists of three components:
 * Python packages:
 
 ```bash
-pip install pandas matplotlib
+pip install pandas matplotlib datashader colorcet
 ```
 
 ---
@@ -41,13 +41,14 @@ All interaction is performed through the Python driver script.
 ### Run Prime Generation
 
 ```bash
-python plot_primes.py [options] <processes> <threads> <range> <start>
+python plot_primes.py [-b] [-v] [-l] [-g] [-s] [-np] <processes> <threads> <range> <start>
 ```
 
 Example:
 
 ```bash
-python plot_primes.py -vl 4 8 1000000 1
+# Ulam spiral with log scale gaps, only saved to PNG
+python plot_primes.py -lgs 4 8 1000000 1
 ```
 
 This runs:
@@ -70,9 +71,11 @@ Flags may be provided individually or combined (e.g., `-vnp`).
 | Flag | Description                             |
 | ---- | ----------------------------------------- |
 | `-v` | Verbose output                     
-| `-np`| Skip plotting                      
+| `-np`| Skip plotting
+| `-s` | Save only (doesn't show plot only save to .png)              
 | `-b` | Enable benchmarking         
-| `-l` | Enable large scale plotting
+| `-l` | Enable large scale plotting (using the Ulam spiral)
+| `-g` | Enable log scaling in the plot
 
 ---
 
@@ -90,9 +93,11 @@ python plot_primes.py clean
 
 The program produces:
 
-* Individual CSV files per process
-* A merged dataset: `all_primes.csv`
-* Visualization plots generated from aggregated data
+- Individual CSV files per process (in `primes/` directory)
+- A merged dataset: `all_primes.csv`
+- NumPy array: `all_primes.npy`
+- Gap/scatter plot: `primes_gaps.png`
+- Ulam spiral: `ulam_spiral.png`
 
 ---
 
@@ -119,5 +124,8 @@ This project was created to demonstrate:
 * Process and thread coordination
 * Automated data pipelines
 * Practical performance scaling techniques
+* Prime number distribution analysis
+* Ulam spiral visualization
+* Empirical verification of the Prime Number Theorem
 
 ---

@@ -97,7 +97,6 @@ def load_prime_data(processes, threads, iterations, start_num, benchmark_toggle=
         df["thread"] = t_id
         dfs.append(df)
     df = pd.concat(dfs).sort_values("prime")
-    df = pd.concat(dfs).sort_values("prime")
     np.save("all_primes.npy", df["prime"].to_numpy(dtype=np.uint64))
     df.to_csv("all_primes.csv", index=False)
     return df

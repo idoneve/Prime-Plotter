@@ -160,7 +160,7 @@ def plot_primes(primes, gaps, log_toggle, save_only=False):
         plt.close()
 
 
-def plot_ulam_datashader(primes, n=3000):
+def plot_ulam_datashader(primes, save_only=False, n=3000):
     primes_set = set(primes)
     x_coords = []
     y_coords = []
@@ -195,8 +195,9 @@ def plot_ulam_datashader(primes, n=3000):
     ax.imshow(img.to_pil(), aspect="equal")
     ax.set_title(f"Ulam Spiral — {len(primes):,} Primes")
     ax.axis("off")
-    plt.show()
 
+    if not save_only:
+        plt.show()
     ds.utils.export_image(img, "ulam_spiral", background="white")
 
 

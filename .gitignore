@@ -5,7 +5,6 @@
 *.npy
 *.png
 benchmarks.txt
-benchmarks.sh
 prime_finder
 
 # ===== Generated data =====

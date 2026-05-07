@@ -61,7 +61,7 @@ format:
 	@echo "Formatting complete"
 
 clean:
-	rm -rf $(TARGET) $(OBJS) $(DEPS) primes all_primes.csv
+	rm -rf $(TARGET) $(OBJS) $(DEPS) primes all_primes.npy
 
 clean_all: clean
 	@echo "WARNING: WILL REMOVE dist directory and ANY .zip or tar.gz files in 3 seconds"

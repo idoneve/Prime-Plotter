@@ -28,6 +28,7 @@ Prime Plotter computes primes at scale (tested up to 8 × 10⁹), verifies the P
 - **Prime gap analysis** — distribution, twin primes, maximum gaps
 - **Ulam spiral** — high-resolution datashader rendering with diagonal polynomial patterns
 - **Publication-ready output** — all plots saved as PNG for LaTeX papers
+- **LaTeX Paper on prime numbers** - the final paper using this repo for computations
 
 ---
 
@@ -100,6 +101,9 @@ python plot_primes.py -g 8 8 4000000 1
 
 # Clean up
 python plot_primes.py clean
+
+# Run benchmarks.sh
+./benchmarks.sh
 ```
 
 ---
@@ -118,6 +122,7 @@ python plot_primes.py clean
 | `prime_gaps.png` | Gap distribution and analysis |
 | `speedup.png` | Parallel speedup (log-log) |
 | `efficiency.png` | Parallel efficiency |
+| `benchmarks.txt` | Benchmark results |
 
 ---
 
@@ -159,6 +164,8 @@ Prime-Plotter/
 ├── plot_primes.py       # Python driver and visualization
 ├── prime_notebook.ipynb # Analysis notebook
 ├── Makefile             # Build, benchmark, and cleanup
+├── benchmarks.sh        # Run multiple benchmarks on different thread to process ratios
+├── paper.pdf            # Compiled LaTeX paper
 ├── README.md
 └── .gitignore
 ```
@@ -169,6 +176,7 @@ primes/                 # Per-thread CSV output
 all_primes.csv          # Merged dataset
 all_primes.npy          # NumPy export
 *.png                   # All plot outputs
+benchmarks.txt          # Benchmark results
 ```
 
 ---

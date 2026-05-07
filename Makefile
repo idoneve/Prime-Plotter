@@ -1,5 +1,5 @@
 # C Version
-CSTD ?= c17
+CSTD ?= c23
 
 # SCP target variables
 USER ?= 

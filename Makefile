@@ -66,7 +66,7 @@ clean:
 clean_all: clean
 	@echo "WARNING: WILL REMOVE dist directory and ANY .zip or tar.gz files in 3 seconds"
 	@sleep 3
-	rm -rf dist *.zip *.tar.gz
+	rm -rf dist *.zip *.tar.gz *.png benchmarks.txt all_primes.*
 	@echo "All files removed"
 
 NPROC := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)

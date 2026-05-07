@@ -93,11 +93,11 @@ python plot_primes.py clean
 
 The program produces:
 
-- Individual CSV files per process (in `primes/` directory)
-- A merged dataset: `all_primes.csv`
-- NumPy array: `all_primes.npy`
-- Gap/scatter plot: `primes_gaps.png`
-- Ulam spiral: `ulam_spiral.png`
+* Individual CSV files per process (in `primes/` directory)
+* A merged dataset: `all_primes.csv`
+* NumPy array: `all_primes.npy`
+* Gap/scatter plot: `primes_gaps.png`
+* Ulam spiral: `ulam_spiral.png`
 
 ---
 

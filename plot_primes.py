@@ -151,7 +151,7 @@ def plot_primes(primes, gaps, log_toggle, save_only=False):
     axes[1].grid(True, alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig("primes.png", dpi=200, bbox_inches='tight')
+    plt.savefig("primes.png", dpi=200, bbox_inches="tight")
     if not save_only:
         plt.show()
     else:
@@ -164,9 +164,10 @@ def plot_ulam_datashader(primes, save_only=False, n=3000):
     y_coords = []
 
     cx = cy = n // 2
-    dx, dy = 0, -1
+    dx, dy = 1, 0            # start right
     step = 1
     steps_taken = 0
+    legs_completed = 0
     x, y = cx, cy
 
     for i in range(1, n * n + 1):
@@ -175,22 +176,32 @@ def plot_ulam_datashader(primes, save_only=False, n=3000):
                 x_coords.append(x)
                 y_coords.append(y)
         if steps_taken == step:
+            # Clockwise: right → down → left → up (for y-down display)
             dx, dy = -dy, dx
             steps_taken = 0
-            if dy == 0:
+            legs_completed += 1
+            if legs_completed == 2:
                 step += 1
+                legs_completed = 0
         x += dx
         y += dy
         steps_taken += 1
 
     df = pd.DataFrame({"x": x_coords, "y": y_coords})
-    cvs = ds.Canvas(plot_width=n, plot_height=n)
+
+    # Key fix: set range so integer coords fall at pixel centers
+    cvs = ds.Canvas(
+        plot_width=n,
+        plot_height=n,
+        x_range=(-0.5, n - 0.5),
+        y_range=(-0.5, n - 0.5)
+    )
     agg = cvs.points(df, "x", "y", agg=ds.count())
     img = tf.shade(agg, cmap=["white", "black"], how="linear")
     tf.set_background(img, "white")
 
     fig, ax = plt.subplots(figsize=(10, 10))
-    ax.imshow(img.to_pil(), aspect="equal")
+    ax.imshow(img.to_pil(), aspect="equal", origin="upper")
     ax.set_title(f"Ulam Spiral — {len(primes):,} Primes")
     ax.axis("off")
 
@@ -342,7 +353,7 @@ def main():
             if large_toggle:
                 n = int(math.sqrt(primes[-1])) + 1
                 n = max(n, 3000)
-                plot_ulam_datashader(primes, n)
+                plot_ulam_datashader(primes, save_only, n)
             else:
                 plot_primes(primes, gaps, log_toggle, save_only)
             print("\nProgram completed successfully")

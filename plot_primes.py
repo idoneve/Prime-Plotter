@@ -8,7 +8,6 @@ import subprocess
 import sys
 import datashader as ds
 import datashader.transfer_functions as tf
-from colorcet import fire
 
 
 def compile_c_program():
@@ -103,7 +102,7 @@ def load_prime_data(processes, threads, iterations, start_num, benchmark_toggle=
 
 
 def plot_primes(primes, gaps, log_toggle, save_only=False):
-    fig, axes = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
+    _, axes = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
     if not log_toggle:
         axes[0].scatter(
             primes,
@@ -245,6 +244,7 @@ def check_args(argv):
 def get_args(argv):
     verbose = False
     no_plot = False
+    benchmark_toggle = False
     large_toggle = False
     log_toggle = False
     save_only = False
@@ -267,6 +267,7 @@ def get_args(argv):
         log_toggle = True
     if "--benchmark" in argv or "-b" in argv:
         argv.remove("--benchmark") if "--benchmark" in argv else argv.remove("-b")
+        benchmark_toggle = True
     if "--save-only" in argv or "-s" in argv:
         argv.remove("--save-only") if "--save-only" in argv else argv.remove("-s")
         save_only = True
@@ -277,7 +278,7 @@ def get_args(argv):
             np.int64(argv[2]),
             np.int64(argv[3]),
             np.int64(argv[4]),
-            True,
+            benchmark_toggle,
         )
     else:
         if not check_args(argv):
@@ -287,6 +288,7 @@ def get_args(argv):
             np.int64(argv[2]),
             np.int64(argv[3]),
             np.int64(argv[4]),
+            benchmark_toggle,
         )
     return df, verbose, large_toggle, log_toggle, no_plot, save_only
 

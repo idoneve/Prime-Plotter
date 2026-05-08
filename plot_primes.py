@@ -164,19 +164,17 @@ def plot_ulam_datashader(primes, save_only=False, n=3000):
     y_coords = []
 
     cx = cy = n // 2
-    dx, dy = 1, 0            # start right
+    dx, dy = 1, 0
     step = 1
     steps_taken = 0
     legs_completed = 0
     x, y = cx, cy
-
     for i in range(1, n * n + 1):
         if 0 <= x < n and 0 <= y < n:
             if i in primes_set:
                 x_coords.append(x)
                 y_coords.append(y)
         if steps_taken == step:
-            # Clockwise: right → down → left → up (for y-down display)
             dx, dy = -dy, dx
             steps_taken = 0
             legs_completed += 1
@@ -186,10 +184,7 @@ def plot_ulam_datashader(primes, save_only=False, n=3000):
         x += dx
         y += dy
         steps_taken += 1
-
     df = pd.DataFrame({"x": x_coords, "y": y_coords})
-
-    # Key fix: set range so integer coords fall at pixel centers
     cvs = ds.Canvas(
         plot_width=n,
         plot_height=n,
@@ -200,7 +195,7 @@ def plot_ulam_datashader(primes, save_only=False, n=3000):
     img = tf.shade(agg, cmap=["white", "black"], how="linear")
     tf.set_background(img, "white")
 
-    fig, ax = plt.subplots(figsize=(10, 10))
+    _, ax = plt.subplots(figsize=(10, 10))
     ax.imshow(img.to_pil(), aspect="equal", origin="upper")
     ax.set_title(f"Ulam Spiral — {len(primes):,} Primes")
     ax.axis("off")

@@ -160,12 +160,14 @@ Benchmarked on Apple Silicon (M-series) sieving 10⁷ ranges:
 
 ```
 Prime-Plotter/
-├── prime_finder.c       # C sieve engine (fork + pthreads)
-├── plot_primes.py       # Python driver and visualization
-├── prime_notebook.ipynb # Analysis notebook
-├── Makefile             # Build, benchmark, and cleanup
-├── benchmarks.sh        # Run multiple benchmarks on different thread to process ratios
-├── paper.pdf            # Compiled LaTeX paper
+├── prime_finder.c       
+├── plot_primes.py       
+├── prime_plotter.ipynb 
+├── Makefile            
+├── benchmarks.sh   
+├── Paper/        
+│   ├── paper.tex
+│   └── paper.pdf
 ├── README.md
 └── .gitignore
 ```
